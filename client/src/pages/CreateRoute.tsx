@@ -645,7 +645,7 @@ export default function CreateRoute() {
             </div>
 
             {/* Map Canvas and control drawers with fixed height to prevent collapsing */}
-            <div className="w-full h-[340px] rounded-[28px] overflow-hidden border border-[#ECE9FF] relative shadow-inner shrink-0 bg-[#FAF9FC]">
+            <div className="w-full h-[300px] sm:h-[340px] rounded-[28px] overflow-hidden border border-[#ECE9FF] relative shadow-inner shrink-0 bg-[#FAF9FC]">
               <GoogleMap
                 places={routePlaces}
                 onMapClick={handleMapClick}
@@ -654,49 +654,49 @@ export default function CreateRoute() {
                 height="100%"
                 drawPath={true}
               />
+            </div>
 
-              {/* Dynamic bottom floating overlay tray with added spots */}
-              <div className="absolute bottom-3 left-3 right-3 bg-white/95 backdrop-blur-[4px] p-3 rounded-2xl border border-[#ECE9FF] shadow-lg max-h-[160px] overflow-y-auto">
-                <div className="flex justify-between items-center mb-2.5 shrink-0">
-                  <span className="text-xs font-black text-neutral-800 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-[#5C36EC]" />
-                    설정된 코스 ({routePlaces.length}곳)
+            {/* 설정된 코스 (아래로 분리된 수려한 리스트 영역) */}
+            <div className="mt-4 bg-white rounded-2xl border border-[#ECE9FF] p-4 shadow-sm flex flex-col shrink-0">
+              <div className="flex justify-between items-center mb-3 shrink-0">
+                <span className="text-sm font-black text-neutral-800 flex items-center gap-1.5">
+                  <Sparkles className="w-4 h-4 text-[#5C36EC]" />
+                  설정된 코스 ({routePlaces.length}곳)
+                </span>
+                
+                {routePlaces.length >= 2 && (
+                  <span className="text-[11px] font-extrabold text-[#5C36EC] font-mono bg-[#FAF8FF] px-2.5 py-1 rounded-lg border border-[#ECE9FF]">
+                    도보: {totalWalkTime}분 ({totalDistance.toFixed(2)}km)
                   </span>
-                  
-                  {routePlaces.length >= 2 && (
-                    <span className="text-[10px] font-extrabold text-[#5C36EC] font-mono">
-                      도보: {totalWalkTime}분 ({totalDistance.toFixed(2)}km)
-                    </span>
-                  )}
-                </div>
+                )}
+              </div>
 
-                <div className="space-y-1.5">
-                  {routePlaces.length === 0 ? (
-                    <div className="text-center py-4 text-neutral-400 text-xs font-medium">
-                      지도를 클리하여 핀을 찍거나 검색해 장소를 추가하세요!
-                    </div>
-                  ) : (
-                    routePlaces.map((pl, i) => (
-                      <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-neutral-50/50 border border-neutral-100 text-xs">
-                        <span className="font-bold text-neutral-800 truncate max-w-[200px]">
-                          {i+1}. {pl.name}
+              <div className="space-y-2 max-h-[160px] overflow-y-auto pr-1">
+                {routePlaces.length === 0 ? (
+                  <div className="text-center py-6 text-neutral-400 text-xs font-bold bg-[#FAF9FC] rounded-xl border border-dashed border-neutral-100">
+                    지도를 클릭하여 핀을 찍거나 검색해 장소를 추가하세요!
+                  </div>
+                ) : (
+                  routePlaces.map((pl, i) => (
+                    <div key={i} className="flex items-center justify-between p-2.5 rounded-xl bg-neutral-50 hover:bg-[#FAF8FF] border border-neutral-100 hover:border-[#ECE0FF] text-xs transition-colors">
+                      <span className="font-extrabold text-neutral-800 truncate max-w-[200px] sm:max-w-xs">
+                        {i+1}. {pl.name}
+                      </span>
+                      <div className="flex items-center gap-2 font-medium shrink-0">
+                        <span className="text-[10px] text-neutral-500 font-bold bg-neutral-100 px-2 py-0.5 rounded-md">
+                          {CATEGORIES.find(c => c.key === pl.category)?.label || pl.category}
                         </span>
-                        <div className="flex items-center gap-1.5 font-medium">
-                          <span className="text-[10px] text-neutral-400 bg-neutral-100 px-1.5 py-0.5 rounded-full">
-                            {CATEGORIES.find(c => c.key === pl.category)?.label || pl.category}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleRemovePlaceFromRoute(i)}
-                            className="p-1 text-rose-500 hover:bg-rose-50 rounded-full transition-colors bg-transparent border-0 cursor-pointer"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemovePlaceFromRoute(i)}
+                          className="p-1.5 text-rose-500 hover:bg-rose-50 rounded-full transition-colors bg-transparent border-0 cursor-pointer"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
                       </div>
-                    ))
-                  )}
-                </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
