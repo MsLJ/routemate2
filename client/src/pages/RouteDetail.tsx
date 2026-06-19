@@ -442,7 +442,7 @@ export default function RouteDetail() {
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1">
-                  <span className="font-extrabold text-gray-900 text-xs sm:text-sm truncate">@{route.author.name}</span>
+                  <span className="font-extrabold text-gray-900 text-xs sm:text-sm truncate whitespace-nowrap shrink-0">@{route.author.name}</span>
                   <span className="bg-neutral-100 text-[9px] text-gray-500 font-bold px-1.5 py-0.5 rounded">디자이너</span>
                 </div>
                 <p className="text-[10px] text-gray-400 font-bold mt-0.5">
@@ -788,7 +788,7 @@ export default function RouteDetail() {
                     </div>
                     <div className="flex-1 space-y-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <span className="font-extrabold text-gray-900 truncate">@{comment.user?.name}</span>
+                        <span className="font-extrabold text-gray-900 truncate whitespace-nowrap shrink-0">@{comment.user?.name}</span>
                         <span className="text-[9px] text-gray-300 font-bold font-mono shrink-0">
                           {new Date(comment.createdAt).toLocaleDateString('ko-KR')}
                         </span>
@@ -858,7 +858,7 @@ export default function RouteDetail() {
                           </div>
                           <div className="flex-1 space-y-1 min-w-0">
                             <div className="flex items-center justify-between">
-                              <span className="font-extrabold text-gray-800 truncate">@{reply.user?.name}</span>
+                              <span className="font-extrabold text-gray-800 truncate whitespace-nowrap shrink-0">@{reply.user?.name}</span>
                               <span className="text-[8px] text-gray-300 font-mono shrink-0">
                                 {new Date(reply.createdAt).toLocaleDateString('ko-KR')}
                               </span>

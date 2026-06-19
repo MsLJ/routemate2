@@ -249,23 +249,23 @@ export default function Home() {
 
         {/* Dynamic Search Bar & Quick Filter button */}
         <form onSubmit={handleSearchSubmit} className="relative w-full mb-6">
-          <div className="flex items-center bg-white rounded-2xl border border-[#DCD7EC] focus-within:border-[#5C36EC] focus-within:ring-2 focus-within:ring-[#5C36EC]/10 shadow-sm hover:shadow-md transition-all pr-2.5 pl-4 py-1">
-            <Search className="w-5 h-5 text-[#9CA3AF] shrink-0" />
+          <div className="flex items-center bg-white rounded-2xl border border-[#DCD7EC] focus-within:border-[#5C36EC] focus-within:ring-2 focus-within:ring-[#5C36EC]/10 shadow-sm hover:shadow-md transition-all pr-1.5 sm:pr-2.5 pl-2.5 sm:pl-4 py-1">
+            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[#9CA3AF] shrink-0" />
             <input
               type="text"
-              className="flex-1 bg-transparent text-sm py-3 px-3 outline-none text-gray-800 placeholder-[#9CA3AF] font-bold"
-              placeholder="코스 이름 혹은 역 주변 검색..."
+              className="flex-1 min-w-0 bg-transparent text-xs sm:text-sm py-2 sm:py-3 px-1.5 sm:px-3 outline-none text-gray-800 placeholder-[#9CA3AF] font-bold"
+              placeholder="장소, 지하철역 혹은 역명 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <div className="h-6 w-[1px] bg-neutral-200 mx-2 shrink-0" />
+            <div className="h-5 sm:h-6 w-[1px] bg-neutral-200 mx-1.5 sm:mx-2 shrink-0" />
             <button
               type="button"
               onClick={() => setLocation("/routes")}
-              className="flex items-center gap-1 text-xs font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] transition-all px-3.5 py-2 rounded-xl shrink-0"
+              className="flex items-center gap-1 text-[11px] sm:text-xs font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] transition-all px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl shrink-0"
             >
-              <SlidersHorizontal className="w-3.5 h-3.5" />
-              필터
+              <SlidersHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span>필터</span>
             </button>
           </div>
         </form>
@@ -422,15 +422,15 @@ export default function Home() {
                   </span>
                 </div>
  
-                <div className="flex items-center gap-1 mb-1.5 shrink-0">
+                <div className="flex items-center gap-1 mb-1.5 shrink-0 min-w-0">
                   <img
                     referrerPolicy="no-referrer"
                     src={cur.authorImage}
                     alt={cur.authorName}
                     className="w-4.5 h-4.5 rounded-full object-cover border border-neutral-200 shrink-0"
                   />
-                  <span className="text-[9px] text-[#5C36EC] font-bold truncate max-w-[60px]">@{cur.authorName}</span>
-                  <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ml-auto ${cur.tagColor} scale-90 origin-right`}>
+                  <span className="text-[9px] text-[#5C36EC] font-bold truncate max-w-[65px] whitespace-nowrap shrink-0">@{cur.authorName}</span>
+                  <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ml-auto ${cur.tagColor} scale-90 origin-right shrink-0`}>
                     {cur.tag}
                   </span>
                 </div>
@@ -550,17 +550,17 @@ export default function Home() {
                 <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
                   <div>
                     {/* Author, date and tag line */}
-                    <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold mb-1 shrink-0 select-none">
+                    <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold mb-1 shrink-0 select-none min-w-0">
                       <img
                         referrerPolicy="no-referrer"
                         src={rec.authorImage}
                         alt={rec.authorName}
                         className="w-4 h-4 rounded-full object-cover shrink-0"
                       />
-                      <span className="text-[#5C36EC]">@{rec.authorName}</span>
+                      <span className="text-[#5C36EC] whitespace-nowrap shrink-0">@{rec.authorName}</span>
                       <span>•</span>
                       <span>{rec.dateLabel}</span>
-                      <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ml-auto ${rec.tagColor}`}>
+                      <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ml-auto ${rec.tagColor} shrink-0`}>
                         {rec.tag}
                       </span>
                     </div>
@@ -665,8 +665,8 @@ export default function Home() {
                         {route.places?.length || 0}곳 경유
                       </span>
                     </div>
-                    <div className="flex flex-col">
-                      <span className="text-[9px] text-[#5C36EC] font-black truncate">@{route.authorName || "User"}</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[9px] text-[#5C36EC] font-black truncate whitespace-nowrap shrink-0">@{route.authorName || "User"}</span>
                       <h4 className="text-xs font-black text-gray-800 truncate group-hover:text-[#5C36EC] leading-snug">
                         {route.title}
                       </h4>

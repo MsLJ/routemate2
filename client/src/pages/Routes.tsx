@@ -206,8 +206,8 @@ export default function Routes() {
                     <div className="flex-1 flex flex-col justify-between min-w-0">
                       <div>
                         {/* Author info and date info */}
-                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold mb-1">
-                          <span className="text-[#8B5CF6]">@{route.authorName || "User"}</span>
+                        <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold mb-1 shrink-0 select-none min-w-0">
+                          <span className="text-[#8B5CF6] whitespace-nowrap shrink-0">@{route.authorName || "User"}</span>
                           <span>•</span>
                           <span>{new Date(route.createdAt).toLocaleDateString('ko-KR')}</span>
                         </div>

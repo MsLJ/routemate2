@@ -64,70 +64,126 @@ export default function AddPlace() {
   };
 
   // 1. Live Place Search Suggestions using AutocompleteService
-  const handleSearchChange = (val: string) => {
+  const handleSearchChange = async (val: string) => {
     setSearchQuery(val);
     if (!val.trim()) {
       setSuggestions([]);
       return;
     }
 
-    if (typeof window !== 'undefined' && window.google?.maps?.places) {
-      const autocompleteService = new window.google.maps.places.AutocompleteService();
-      autocompleteService.getPlacePredictions(
-        {
+    if (typeof window !== 'undefined' && window.google?.maps) {
+      try {
+        const { AutocompleteSuggestion } = await window.google.maps.importLibrary("places") as any;
+        const response = await AutocompleteSuggestion.fetchAutocompleteSuggestions({
           input: val,
-          language: 'ko',
-          // Prioritize suggestions in South Korea for local convenience
-          componentRestrictions: { country: 'kr' }
-        },
-        (predictions, status) => {
-          if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
-            setSuggestions(predictions);
-          } else {
-            setSuggestions([]);
-          }
+          includedRegionCodes: ['kr'],
+          language: 'ko'
+        });
+        if (response?.suggestions) {
+          const mapped = response.suggestions.map((s: any) => ({
+            place_id: s.placePrediction.placeId,
+            description: s.placePrediction.text.toString(),
+            structured_formatting: {
+              main_text: s.placePrediction.mainText.toString(),
+              secondary_text: s.placePrediction.secondaryText?.toString() || '',
+            }
+          }));
+          setSuggestions(mapped);
+          return;
         }
-      );
+      } catch (err) {
+        console.warn("Modern Autocomplete failed, trying legacy:", err);
+      }
+
+      if (window.google?.maps?.places?.AutocompleteService) {
+        const autocompleteService = new window.google.maps.places.AutocompleteService();
+        autocompleteService.getPlacePredictions(
+          {
+            input: val,
+            language: 'ko',
+            // Prioritize suggestions in South Korea for local convenience
+            componentRestrictions: { country: 'kr' }
+          },
+          (predictions, status) => {
+            if (status === window.google.maps.places.PlacesServiceStatus.OK && predictions) {
+              setSuggestions(predictions);
+            } else {
+              setSuggestions([]);
+            }
+          }
+        );
+      }
     }
   };
 
   // 2. Fetch specific Place Details when suggestion is selected
-  const handleSelectSuggestion = (prediction: google.maps.places.AutocompletePrediction) => {
+  const handleSelectSuggestion = async (prediction: any) => {
     setSearchQuery(prediction.description);
     setSuggestions([]);
     setIsSearching(true);
 
-    if (typeof window !== 'undefined' && window.google?.maps?.places) {
-      const dummyDiv = document.createElement('div');
-      const placesService = new window.google.maps.places.PlacesService(dummyDiv);
+    if (typeof window !== 'undefined' && window.google?.maps) {
+      try {
+        const { Place } = await window.google.maps.importLibrary("places") as any;
+        const place = new Place({ id: prediction.place_id });
+        await place.fetchFields({
+          fields: ['displayName', 'formattedAddress', 'location']
+        });
 
-      placesService.getDetails(
-        {
-          placeId: prediction.place_id,
-          fields: ['name', 'formatted_address', 'geometry'],
-        },
-        (place, status) => {
-          setIsSearching(false);
-          if (status === window.google.maps.places.PlacesServiceStatus.OK && place && place.geometry?.location) {
-            const name = place.name || prediction.structured_formatting.main_text;
-            const address = place.formatted_address || prediction.description;
-            const lat = place.geometry.location.lat();
-            const lng = place.geometry.location.lng();
+        const name = place.displayName || prediction.structured_formatting.main_text;
+        const address = place.formattedAddress || prediction.description;
+        const lat = place.location ? place.location.lat() : 37.5665;
+        const lng = place.location ? place.location.lng() : 126.978;
 
-            setFormData(prev => ({
-              ...prev,
-              name: name,
-              address: address,
-              latitude: lat,
-              longitude: lng,
-            }));
-            
-            toast.success(`📍 ${name} 위치 정보 자동완성 완료!`);
-          } else {
-            toast.error('장소의 세부 좌표를 불려오지 못했습니다.');
+        setFormData(prev => ({
+          ...prev,
+          name: name,
+          address: address,
+          latitude: lat,
+          longitude: lng,
+        }));
+        
+        setIsSearching(false);
+        toast.success(`📍 ${name} 위치 정보 자동완성 완료!`);
+        return;
+      } catch (err) {
+        console.warn("Modern Place details failed, trying legacy:", err);
+      }
+
+      if (window.google?.maps?.places?.PlacesService) {
+        const dummyDiv = document.createElement('div');
+        const placesService = new window.google.maps.places.PlacesService(dummyDiv);
+
+        placesService.getDetails(
+          {
+            placeId: prediction.place_id,
+            fields: ['name', 'formatted_address', 'geometry'],
+          },
+          (place, status) => {
+            setIsSearching(false);
+            if (status === window.google.maps.places.PlacesServiceStatus.OK && place && place.geometry?.location) {
+              const name = place.name || prediction.structured_formatting.main_text;
+              const address = place.formatted_address || prediction.description;
+              const lat = place.geometry.location.lat();
+              const lng = place.geometry.location.lng();
+
+              setFormData(prev => ({
+                ...prev,
+                name: name,
+                address: address,
+                latitude: lat,
+                longitude: lng,
+              }));
+              
+              toast.success(`📍 ${name} 위치 정보 자동완성 완료!`);
+            } else {
+              toast.error('장소의 세부 좌표를 불려오지 못했습니다.');
+            }
           }
-        }
-      );
+        );
+      } else {
+        setIsSearching(false);
+      }
     } else {
       setIsSearching(false);
     }

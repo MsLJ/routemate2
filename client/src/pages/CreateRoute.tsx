@@ -188,48 +188,94 @@ export default function CreateRoute() {
     const combinedResults = [...localMatches, customOption];
 
     // Check if Google Maps Places API is available
-    if (window.google?.maps?.places) {
+    if (window.google?.maps) {
       setIsSearchingGMap(true);
-      try {
-        const dummyContainer = document.createElement('div');
-        const service = new window.google.maps.places.PlacesService(dummyContainer);
-        
-        service.textSearch({ query: query }, (results, status) => {
-          setIsSearchingGMap(false);
-          if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
-            const formatted = results.map(r => ({
-              id: r.place_id || `gmap-${Math.random()}`,
-              name: r.name || '',
-              address: r.formatted_address || '',
-              latitude: r.geometry?.location?.lat() || 37.5665,
-              longitude: r.geometry?.location?.lng() || 126.978,
+      
+      const runSearch = async () => {
+        try {
+          const { Place } = await window.google.maps.importLibrary("places") as any;
+          const { places } = await Place.searchByText({
+            textQuery: query,
+            fields: ['id', 'displayName', 'formattedAddress', 'location'],
+            language: 'ko'
+          });
+
+          if (places && places.length > 0) {
+            const formatted = places.map((r: any) => ({
+              id: r.id || `gmap-${Math.random()}`,
+              name: r.displayName || '',
+              address: r.formattedAddress || '',
+              latitude: r.location ? r.location.lat() : 37.5665,
+              longitude: r.location ? r.location.lng() : 126.978,
             }));
 
             const googleFiltered = formatted.filter(g => !localMatches.some(l => l.name === g.name));
             const finalResults = [...localMatches, ...googleFiltered, customOption];
             setSearchResults(finalResults);
             
+            setIsSearchingGMap(false);
             if (finalResults.length > 0) {
               setMapCenter({ lat: finalResults[0].latitude, lng: finalResults[0].longitude });
               setMapZoom(15);
               toast.success(`'${query}' 검색 결과 ${finalResults.length}건을 가져왔습니다.`);
             }
-          } else {
-            // Google Maps Search fails/no matches: Fallback gracefully to the built-in landmark index + custom placeholder
+            return;
+          }
+        } catch (err) {
+          console.warn("Modern Place.searchByText failed, trying legacy fallback:", err);
+        }
+
+        // Legacy fallback
+        if (window.google?.maps?.places?.PlacesService) {
+          try {
+            const dummyContainer = document.createElement('div');
+            const service = new window.google.maps.places.PlacesService(dummyContainer);
+            
+            service.textSearch({ query: query }, (results, status) => {
+              setIsSearchingGMap(false);
+              if (status === window.google.maps.places.PlacesServiceStatus.OK && results) {
+                const formatted = results.map(r => ({
+                  id: r.place_id || `gmap-${Math.random()}`,
+                  name: r.name || '',
+                  address: r.formatted_address || '',
+                  latitude: r.geometry?.location?.lat() || 37.5665,
+                  longitude: r.geometry?.location?.lng() || 126.978,
+                }));
+
+                const googleFiltered = formatted.filter(g => !localMatches.some(l => l.name === g.name));
+                const finalResults = [...localMatches, ...googleFiltered, customOption];
+                setSearchResults(finalResults);
+                
+                if (finalResults.length > 0) {
+                  setMapCenter({ lat: finalResults[0].latitude, lng: finalResults[0].longitude });
+                  setMapZoom(15);
+                  toast.success(`'${query}' 검색 결과 ${finalResults.length}건을 가져왔습니다.`);
+                }
+              } else {
+                setSearchResults(combinedResults);
+                setMapCenter({ lat: combinedResults[0].latitude, lng: combinedResults[0].longitude });
+                setMapZoom(14);
+                toast.success(`'${query}' 검색 완료 (안전 로컬 연동: ${localMatches.length}건 매칭).`);
+              }
+            });
+          } catch (legacyErr) {
+            console.error("Legacy Places search failed:", legacyErr);
+            setIsSearchingGMap(false);
             setSearchResults(combinedResults);
             setMapCenter({ lat: combinedResults[0].latitude, lng: combinedResults[0].longitude });
             setMapZoom(14);
-            toast.success(`'${query}' 검색 완료 (안전 로컬 연동: ${localMatches.length}건 매칭).`);
+            toast.success(`'${query}' 검색 완료 (로컬 백업 모드).`);
           }
-        });
-      } catch (err) {
-        console.error(err);
-        setIsSearchingGMap(false);
-        setSearchResults(combinedResults);
-        setMapCenter({ lat: combinedResults[0].latitude, lng: combinedResults[0].longitude });
-        setMapZoom(14);
-        toast.success(`'${query}' 검색 완료 (로컬 백업 모드).`);
-      }
+        } else {
+          setIsSearchingGMap(false);
+          setSearchResults(combinedResults);
+          setMapCenter({ lat: combinedResults[0].latitude, lng: combinedResults[0].longitude });
+          setMapZoom(14);
+          toast.success(`'${query}' 검색 완료 (로컬 백업 모드).`);
+        }
+      };
+
+      runSearch();
     } else {
       // Local Database Lookup
       setSearchResults(combinedResults);
