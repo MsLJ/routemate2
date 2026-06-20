@@ -77,6 +77,23 @@ export default function Home() {
     sortBy: "recent"
   });
 
+  const [activeLocalRoute, setActiveLocalRoute] = useState<any>(null);
+  const [activeStepVal, setActiveStepVal] = useState<number>(0);
+
+  // Track active following route dynamically
+  useEffect(() => {
+    if (routes && routes.length > 0) {
+      const active = routes.find((r: any) => localStorage.getItem(`following_route_${r.id}`) === 'true');
+      if (active) {
+        setActiveLocalRoute(active);
+        const step = parseInt(localStorage.getItem(`route_${active.id}_curStep`) || "0");
+        setActiveStepVal(step);
+      } else {
+        setActiveLocalRoute(null);
+      }
+    }
+  }, [routes]);
+
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
@@ -202,15 +219,15 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] text-[#111827] flex flex-col items-center py-0 sm:py-6 px-0 sm:px-4 md:px-8 font-sans">
+    <div className="min-h-screen bg-[#F8F9FC] text-[#1F2937] flex flex-col items-center py-0 sm:py-8 px-0 sm:px-4 md:px-8 font-sans">
       
-      {/* Centered Device Container simulating an elegant iPhone/Mobile screen */}
-      <div className="w-full max-w-[640px] bg-white rounded-none sm:rounded-[36px] border-0 sm:border border-[#EBE8F3] shadow-none sm:shadow-2xl overflow-hidden flex flex-col p-4 sm:p-6 min-h-screen sm:min-h-[920px] pb-32">
+      {/* Device Container Simulating Spacious & Fluid Interface (max-w 640px) */}
+      <div className="w-full max-w-[640px] bg-white rounded-none sm:rounded-[36px] border-0 sm:border border-[#ECEAF5] shadow-none sm:shadow-2xl overflow-hidden flex flex-col p-5 sm:p-7 min-h-screen sm:min-h-[920px] pb-32">
         
         {/* Top Header - Pure Brand Craft */}
-        <div className="flex items-center justify-between mb-5 select-none pb-2">
+        <div className="flex items-center justify-between mb-6 select-none border-b border-neutral-50 pb-4">
           <Link href="/" className="flex items-center shrink-0">
-            <span className="text-2xl font-black tracking-tighter text-[#5C36EC] hover:opacity-90 duration-150">
+            <span className="text-3xl font-black bg-gradient-to-r from-[#5C36EC] to-[#8063f2] bg-clip-text text-transparent tracking-tighter">
               RUTEMATE
             </span>
           </Link>
@@ -218,7 +235,7 @@ export default function Home() {
           <div className="flex items-center gap-3">
             <NotificationBell />
             {isAuthenticated ? (
-              <Link href="/my" className="w-9 h-9 rounded-full overflow-hidden border-2 border-[#5C36EC] shadow-sm hover:scale-105 active:scale-95 duration-150 transition-all cursor-pointer">
+              <Link href="/my" className="w-10 h-10 rounded-full overflow-hidden border-2 border-[#5C36EC] shadow-md hover:scale-105 active:scale-95 duration-150 transition-all cursor-pointer">
                 <img 
                   referrerPolicy="no-referrer"
                   src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" 
@@ -229,7 +246,7 @@ export default function Home() {
             ) : (
               <a 
                 href={getLoginUrl()} 
-                className="flex items-center gap-1.5 text-xs font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] px-4.5 py-2.5 rounded-full transition-all"
+                className="flex items-center gap-1.5 text-xs font-black text-white bg-[#5C36EC] hover:bg-[#4b2bc9] px-5 py-3 rounded-2xl transition-all shadow-sm active:scale-95"
                 id="login-btn"
               >
                 <LogIn className="w-3.5 h-3.5" />
@@ -239,46 +256,47 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Brand Headline Phrase */}
-        <div className="mb-5 select-none">
-          <h2 className="text-[20px] sm:text-[22px] font-black tracking-tight leading-snug text-[#111827]">
-            어디로 떠나볼까요?<br/>
-            <span className="text-[#5C36EC] font-extrabold">낭만 가득한 맞춤 루트 추천</span> ✨
+        {/* Welcome Phrase */}
+        <div className="mb-6 select-none text-left">
+          <h2 className="text-2xl sm:text-[26px] font-black tracking-tight leading-snug text-gray-950">
+            어디로 떠나볼까요?<br />
+            <span className="bg-gradient-to-r from-[#5C36EC] to-indigo-500 bg-clip-text text-transparent">낭만 가득한 맞춤 루트 추천</span> ✨
           </h2>
+          <p className="text-sm font-bold text-gray-400 mt-1.5">이색적인 일정과 나들이 스팟을 한눈에 설계해 보세요</p>
         </div>
 
-        {/* Dynamic Search Bar & Quick Filter button */}
-        <form onSubmit={handleSearchSubmit} className="relative w-full mb-6">
-          <div className="flex items-center bg-white rounded-2xl border border-[#DCD7EC] focus-within:border-[#5C36EC] focus-within:ring-2 focus-within:ring-[#5C36EC]/10 shadow-sm hover:shadow-md transition-all pr-1.5 sm:pr-2.5 pl-2.5 sm:pl-4 py-1">
-            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[#9CA3AF] shrink-0" />
+        {/* Premium Large Search Bar */}
+        <form onSubmit={handleSearchSubmit} className="relative w-full mb-8">
+          <div className="flex items-center bg-[#FAF9FF] rounded-[24px] border border-[#DECEFF] focus-within:border-[#5C36EC] focus-within:ring-4 focus-within:ring-[#5C36EC]/10 focus-within:bg-white shadow-xs hover:shadow-sm transition-all pr-2 pl-4 py-1.5">
+            <Search className="w-5 h-5 text-[#9CA3AF] shrink-0" />
             <input
               type="text"
-              className="flex-1 min-w-0 bg-transparent text-xs sm:text-sm py-2 sm:py-3 px-1.5 sm:px-3 outline-none text-gray-800 placeholder-[#9CA3AF] font-bold"
+              className="flex-1 min-w-0 bg-transparent text-sm sm:text-base py-3 px-3 outline-none text-gray-900 placeholder-[#9CA3AF] font-bold"
               placeholder="장소, 지하철역 혹은 역명 검색..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
-            <div className="h-5 sm:h-6 w-[1px] bg-neutral-200 mx-1.5 sm:mx-2 shrink-0" />
+            <div className="h-6 w-[1px] bg-neutral-200 mx-2 shrink-0" />
             <button
               type="button"
               onClick={() => setLocation("/routes")}
-              className="flex items-center gap-1 text-[11px] sm:text-xs font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] transition-all px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl shrink-0"
+              className="flex items-center gap-1.5 text-xs font-black text-[#5C36EC] bg-white border border-[#E9E4FF] hover:bg-[#F0EDFF] transition-all px-4 py-2.5 rounded-2xl shrink-0 shadow-3xs active:scale-95"
             >
-              <SlidersHorizontal className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <SlidersHorizontal className="w-3.5 h-3.5" />
               <span>필터</span>
             </button>
           </div>
         </form>
 
-        {/* Monetized Sponsor & Affiliate Banner */}
+        {/* Dynamic Partner Banner */}
         {adsenseHtml ? (
-          <div className="w-full bg-white border border-[#DECEFF] rounded-2xl p-2 mb-6 relative overflow-hidden shadow-sm">
-            <div className="absolute top-2 right-2 z-20">
+          <div className="w-full bg-white border border-[#DECEFF] rounded-[26px] p-2.5 mb-8 relative overflow-hidden shadow-xs hover:shadow-sm transition-all">
+            <div className="absolute top-2.5 right-2.5 z-20">
               <button 
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsAdSettingsOpen(true); }}
                 className="p-1 rounded bg-black/40 text-white hover:bg-black/60 transition-all"
               >
-                <Settings className="w-3 h-3" />
+                <Settings className="w-3.5 h-3.5" />
               </button>
             </div>
             <div 
@@ -289,118 +307,167 @@ export default function Home() {
         ) : (
           <div
             onClick={() => setIsAdSettingsOpen(true)}
-            className="w-full bg-gradient-to-r from-indigo-50 to-[#FAF8FF] border border-[#DECEFF] rounded-2xl p-4 mb-6 flex items-center justify-between relative overflow-hidden cursor-pointer group shadow-sm hover:shadow-md duration-200"
+            className="w-full bg-gradient-to-r from-[#FAF8FF] to-[#F1ECFF] border border-[#DECEFF] rounded-[26px] p-5 mb-8 flex items-center justify-between relative overflow-hidden cursor-pointer group shadow-xs hover:shadow-md transition-all duration-300"
           >
-            <div className="flex flex-col pr-6">
-              <div className="flex items-center gap-1.5 mb-1">
-                <span className="bg-[#5C36EC] text-white text-[9px] font-black px-1.5 py-0.5 rounded">AFFILIATE</span>
-                <span className="text-[11px] font-extrabold text-[#5C36EC] flex items-center gap-1">맞춤 파트너스 특가 연동 <ExternalLink className="w-2.5 h-2.5" /></span>
+            <div className="flex flex-col pr-6 text-left">
+              <div className="flex items-center gap-1.5 mb-1.5">
+                <span className="bg-[#5C36EC] text-white text-[9px] font-black px-2 py-0.5 rounded-lg font-sans">AFFILIATE</span>
+                <span className="text-xs font-bold text-[#5C36EC] flex items-center gap-1">특가 연동 파트너스 <ExternalLink className="w-3 h-3 text-[#5C36EC]" /></span>
               </div>
-              <p className="text-gray-900 text-xs font-black leading-snug">
-                에버랜드 & 아르떼뮤지엄 할인 티켓<br/>
-                <span className="text-[#5C36EC] font-bold">최대 40% 한정 제휴 정산 할인 진행 중</span>
+              <p className="text-gray-950 text-sm sm:text-base font-black leading-snug">
+                에버랜드 & 아르떼뮤지엄 할인 티켓<br />
+                <span className="text-[#5C36EC] font-bold">최대 40% 단독 정산 할인 진행 완료</span>
               </p>
             </div>
-            <Gift className="w-8 h-8 text-[#5C36EC] shrink-0" />
+            <Gift className="w-9 h-9 text-[#5C36EC] shrink-0 transform group-hover:scale-110 group-hover:rotate-6 transition-all duration-300" />
           </div>
         )}
 
-        {/* Compact Main Seoul Toggle Card */}
-        <div
+        {/* Section: Sub-regions Horizontal Quick Ribbon */}
+        <div className="flex gap-2.5 overflow-x-auto pb-4 scrollbar-none snap-x select-none mb-8">
+          <div
             onClick={() => {
               setShowSeoulSubCategories(prev => !prev);
-              toast.info(showSeoulSubCategories ? "📌 서울 세부 카테고리를 숨겼습니다." : "📌 서울 세부 카테고리를 열었습니다.");
+              toast.info(showSeoulSubCategories ? "📌 서울 카테고리를 축소했습니다." : "📌 서울 카테고리를 전체 펼쳤습니다.");
             }}
-            className="flex items-center justify-between p-3 bg-[#F4F1FF] hover:bg-[#EBE7FF] border border-[#E1D9FF] rounded-2xl cursor-pointer select-none transition-all duration-205 shadow-2xs mb-3 group"
+            className={`snap-start shrink-0 flex items-center gap-2 px-5 py-4 rounded-[20px] border cursor-pointer text-sm font-black transition-all ${
+              showSeoulSubCategories 
+                ? "bg-[#5C36EC] text-white border-[#5C36EC] shadow-md shadow-[#5C36EC]/15" 
+                : "bg-white text-gray-800 border-[#EBE8F3] hover:border-[#5C36EC]"
+            }`}
           >
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[#5C36EC] flex items-center justify-center shadow-xs">
-                <MapPin className="w-4 h-4 text-white" />
-              </div>
-              <div className="flex flex-col text-left">
-                <span className="text-xs font-black text-gray-900 leading-none">서울 전체보기</span>
-                <span className="text-[10px] text-gray-400 mt-1.5 font-semibold leading-none">성수・홍대・이태원・잠실 일대 핫플레이스</span>
-              </div>
-            </div>
-            <div className="text-[10px] font-bold text-gray-400 group-hover:text-[#5C36EC] flex items-center gap-0.5">
-              {showSeoulSubCategories ? "접기 ▲" : "자세히 보기 ▼"}
-            </div>
+            <MapPin className="w-4 h-4 shrink-0" />
+            <span>서울 전체보기</span>
           </div>
- 
-          {/* Beautiful 2x2 Checkerboard Grid representing sub-regions (성수, 홍대, 이태원, 잠실) */}
-          {showSeoulSubCategories && (
-            <div className="grid grid-cols-2 gap-3 select-none transition-all duration-300">
-              {/* Seongsu */}
-              <div
-                onClick={() => handleCategoryClick("성수")}
-                className="flex items-center gap-3 p-3 bg-white border border-[#EBE8F3] hover:border-[#5C36EC] rounded-2xl cursor-pointer shadow-2xs hover:shadow-sm hover:translate-y-[-1px] transition-all duration-200 group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-violet-50 text-[#8B5CF6] border border-violet-100 flex items-center justify-center group-hover:bg-violet-100 transition-colors shrink-0">
-                  <Palette className="w-4.5 h-4.5" />
+
+          <div
+            onClick={() => handleCategoryClick("성수")}
+            className="snap-start shrink-0 flex items-center gap-2 px-5 py-4 bg-white border border-[#EBE8F3] hover:border-[#5C36EC] rounded-[20px] cursor-pointer text-sm font-black text-gray-850 hover:text-[#5C36EC] hover:shadow-xs hover:-translate-y-px transition-all"
+          >
+            <Palette className="w-4 h-4 text-violet-500 shrink-0" />
+            <span>성수 팝업 🎨</span>
+          </div>
+
+          <div
+            onClick={() => handleCategoryClick("홍대")}
+            className="snap-start shrink-0 flex items-center gap-2 px-5 py-4 bg-white border border-[#EBE8F3] hover:border-[#5C36EC] rounded-[20px] cursor-pointer text-sm font-black text-gray-850 hover:text-emerald-600 hover:shadow-xs hover:-translate-y-px transition-all"
+          >
+            <Music className="w-4 h-4 text-emerald-500 shrink-0" />
+            <span>홍대 버스킹 🎸</span>
+          </div>
+
+          <div
+            onClick={() => handleCategoryClick("이태원")}
+            className="snap-start shrink-0 flex items-center gap-2 px-5 py-4 bg-white border border-[#EBE8F3] hover:border-[#5C36EC] rounded-[20px] cursor-pointer text-sm font-black text-gray-850 hover:text-rose-600 hover:shadow-xs hover:-translate-y-px transition-all"
+          >
+            <Globe className="w-4 h-4 text-rose-500 shrink-0" />
+            <span>이태원 맛집 🍕</span>
+          </div>
+
+          <div
+            onClick={() => handleCategoryClick("잠실")}
+            className="snap-start shrink-0 flex items-center gap-2 px-5 py-4 bg-white border border-[#EBE8F3] hover:border-[#5C36EC] rounded-[20px] cursor-pointer text-sm font-black text-gray-850 hover:text-[#0284C7] hover:shadow-xs hover:-translate-y-px transition-all"
+          >
+            <Compass className="w-4 h-4 text-sky-500 shrink-0" />
+            <span>잠실 호수 🎡</span>
+          </div>
+        </div>
+
+        {/* Section: Ongoing Tracker Dashboard */}
+        <div className="w-full mb-8 text-left">
+          <div className="flex items-end justify-between mb-3 select-none">
+            <h3 className="text-xs sm:text-sm font-extrabold text-gray-400 uppercase tracking-widest">진행 중인 이색 코스 🗺️</h3>
+          </div>
+
+          {activeLocalRoute ? (
+            <div className="relative w-full bg-gradient-to-br from-[#5C36EC] via-[#6e4bee] to-[#8063f2] text-white rounded-[28px] p-6 shadow-md shadow-[#5C36EC]/15 overflow-hidden group select-none transition-all duration-300">
+              {/* Decorative faint circles */}
+              <div className="absolute -right-10 -bottom-10 w-44 h-44 rounded-full bg-white/5 pointer-events-none group-hover:scale-110 transition-transform duration-700" />
+              <div className="absolute -left-10 -top-10 w-32 h-32 rounded-full bg-white/5 pointer-events-none" />
+
+              <div className="relative z-10 flex flex-col text-left">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="bg-white/20 backdrop-blur-xs text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider text-purple-100 flex items-center gap-1.5 animate-pulse">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                    나침반 연동 트래킹 중
+                  </span>
+                  <span className="text-[11px] font-bold text-purple-200">
+                    총 {activeLocalRoute.places?.length || 0}곳 코스
+                  </span>
                 </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-xs font-black text-gray-900 group-hover:text-[#5C36EC] leading-none">성수</span>
-                  <span className="text-[9px] text-gray-400 mt-1.5 font-medium leading-tight">힙스터 팝업・카페</span>
+
+                <h4 className="text-xl font-black mb-1.5 text-white leading-tight truncate">
+                  {activeLocalRoute.title}
+                </h4>
+                
+                <p className="text-xs text-purple-200 font-bold mb-5 truncate">
+                  {activeLocalRoute.places?.[activeStepVal]?.name ? `현재 목적지: ${activeLocalRoute.places[activeStepVal].name}` : "이색적인 도보 여정을 순서대로 밟아보세요"}
+                </p>
+
+                {/* Tracking Progress Bar */}
+                <div className="w-full bg-white/20 h-3 rounded-full overflow-hidden mb-5">
+                  <div 
+                    className="bg-white h-3 rounded-full transition-all duration-700 shadow-inner" 
+                    style={{ width: `${Math.max(12, Math.round((activeStepVal / (activeLocalRoute.places?.length || 1)) * 100))}%` }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-purple-100">
+                    전체 중 <strong className="text-white text-base font-black">{activeStepVal}곳</strong> 발견 완료 ({Math.round((activeStepVal / (activeLocalRoute.places?.length || 1)) * 100)}%)
+                  </span>
+
+                  <button
+                    onClick={() => {
+                      setLocation(`/route/${activeLocalRoute.id}`);
+                      toast.success("진행하시던 트래킹 안내지도로 이동합니다!");
+                    }}
+                    className="flex items-center gap-1.5 text-xs font-black text-[#5C36EC] bg-white hover:bg-neutral-50 hover:scale-103 active:scale-97 transition-all px-4.5 py-3 rounded-xl shadow-md border-0 cursor-pointer"
+                  >
+                    이어서 완주하기 🚀
+                  </button>
                 </div>
               </div>
- 
-              {/* Hongdae */}
-              <div
-                onClick={() => handleCategoryClick("홍대")}
-                className="flex items-center gap-3 p-3 bg-white border border-[#EBE8F3] hover:border-[#5C36EC] rounded-2xl cursor-pointer shadow-2xs hover:shadow-sm hover:translate-y-[-1px] transition-all duration-200 group"
+            </div>
+          ) : (
+            <div className="w-full bg-gradient-to-r from-[#FAF9FF] to-[#FAF8FF] border-2 border-dashed border-[#5C36EC]/25 rounded-[30px] p-6 text-center shadow-xs select-none hover:bg-[#F4F1FF]/50 transition-colors duration-200">
+              <span className="inline-block p-3.5 rounded-2xl bg-[#F0EDFF] text-[#5C36EC] mb-3">
+                <Compass className="w-7 h-7" />
+              </span>
+              <p className="text-neutral-950 text-sm sm:text-base font-black leading-snug mb-1">
+                아직 진행 중인 탐험 코스가 없어요 🎒
+              </p>
+              <p className="text-neutral-400 text-xs font-bold mb-4">
+                마음에 드는 명소 루트를 선택하고 [실시간 내비게이션 시작하기]를 가볍게 탭해 보세요!
+              </p>
+              <button
+                onClick={() => {
+                  setLocation("/routes");
+                  toast.success("명소들의 발자취가 담긴 추천 페이지로 향합니다!");
+                }}
+                className="inline-flex items-center gap-1.5 text-xs font-black text-white bg-[#5C36EC] hover:bg-[#4a27ce] px-5 py-3 rounded-2xl transition-all shadow-sm active:scale-97 cursor-pointer border-0"
               >
-                <div className="w-9 h-9 rounded-xl bg-emerald-50 text-[#10B981] border border-emerald-100 flex items-center justify-center group-hover:bg-emerald-100 transition-colors shrink-0">
-                  <Music className="w-4.5 h-4.5" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-xs font-black text-gray-900 group-hover:text-[#10B981] leading-none">홍대</span>
-                  <span className="text-[9px] text-gray-400 mt-1.5 font-medium leading-tight">인디 버스킹・핫쇼핑</span>
-                </div>
-              </div>
- 
-              {/* Itaewon */}
-              <div
-                onClick={() => handleCategoryClick("이태원")}
-                className="flex items-center gap-3 p-3 bg-white border border-[#EBE8F3] hover:border-[#5C36EC] rounded-2xl cursor-pointer shadow-2xs hover:shadow-sm hover:translate-y-[-1px] transition-all duration-200 group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-pink-50 text-[#F43F5E] border border-pink-100 flex items-center justify-center group-hover:bg-pink-100 transition-colors shrink-0">
-                  <Globe className="w-4.5 h-4.5" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-xs font-black text-gray-900 group-hover:text-[#E11D48] leading-none">이태원</span>
-                  <span className="text-[9px] text-gray-400 mt-1.5 font-medium leading-tight">이색 글로벌 맛집</span>
-                </div>
-              </div>
- 
-              {/* Jamsil */}
-              <div
-                onClick={() => handleCategoryClick("잠실")}
-                className="flex items-center gap-3 p-3 bg-white border border-[#EBE8F3] hover:border-[#5C36EC] rounded-2xl cursor-pointer shadow-2xs hover:shadow-sm hover:translate-y-[-1px] transition-all duration-200 group"
-              >
-                <div className="w-9 h-9 rounded-xl bg-sky-50 text-[#0284C7] border border-sky-100 flex items-center justify-center group-hover:bg-sky-100 transition-colors shrink-0">
-                  <Compass className="w-4.5 h-4.5" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="text-xs font-black text-gray-900 group-hover:text-[#0284C7] leading-none">잠실</span>
-                  <span className="text-[9px] text-gray-400 mt-1.5 font-medium leading-tight">석촌호수・놀이공원</span>
-                </div>
-              </div>
+                추천 코스 둘러보기
+              </button>
             </div>
           )}
- 
-        <div className="w-full mb-6">
-          <div className="flex items-end justify-between mb-3 select-none">
-            <div className="flex flex-col">
-              <h3 className="text-base font-black text-gray-900 leading-tight">이주의 루트</h3>
-              <p className="text-[10px] text-gray-400 font-bold">인기 메이트 연간 누적 최다 추천 명소</p>
+        </div>
+
+        {/* Section: Curated Weekly Curation Slides (이주의 루트) */}
+        <div className="w-full mb-8">
+          <div className="flex items-end justify-between mb-4 select-none">
+            <div className="flex flex-col text-left">
+              <h3 className="text-lg sm:text-xl font-black text-gray-900 leading-tight">이주의 추천 코스 🏆</h3>
+              <p className="text-xs text-gray-400 font-bold">에디터가 엄선해 다녀온 주간 누적 최고 평점 루트</p>
             </div>
-            <Link href="/routes" className="text-xs font-black text-[#5C36EC] hover:underline flex items-center shrink-0">
-              더보기 <ChevronRight className="w-3.5 h-3.5" />
+            <Link href="/routes" className="text-xs font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] px-3.5 py-1.5 rounded-xl transition-colors shrink-0 flex items-center gap-0.5">
+              <span>더보기</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
- 
-          {/* Weekly route carousel list container */}
-          <div className="flex gap-3.5 overflow-x-auto pb-1.5 scrollbar-none snap-x snap-mandatory">
+
+          {/* Swipe / Scroll Card Ribbon (cueing of 1.4 items) */}
+          <div className="flex gap-4.5 overflow-x-auto pb-4 px-0.5 scrollbar-none snap-x snap-mandatory">
             {curatedWeekRoutes.map((cur) => (
               <div 
                 key={cur.id}
@@ -408,218 +475,200 @@ export default function Home() {
                   toast.success(`'${cur.title}' 코스를 로드했습니다!`);
                   setLocation(`/routes?search=${encodeURIComponent(cur.tag)}`);
                 }}
-                className="snap-start shrink-0 w-[170px] sm:w-[185px] bg-white border border-[#EBE8F3] rounded-2xl overflow-hidden shadow-2xs hover:shadow-sm hover:border-[#5C36EC] transition-all cursor-pointer flex flex-col p-2.5"
+                className="snap-start shrink-0 w-[275px] sm:w-[310px] bg-white border border-[#ECEAF5] rounded-[28px] overflow-hidden shadow-2xs hover:shadow-sm hover:border-[#5C36EC] transition-all cursor-pointer flex flex-col p-4"
               >
-                <div className="relative h-20 rounded-xl overflow-hidden mb-2 bg-neutral-100 shrink-0">
+                <div className="relative h-40 rounded-2xl overflow-hidden mb-3 bg-neutral-100 shrink-0">
                   <img
                     referrerPolicy="no-referrer"
                     src={cur.image}
                     alt={cur.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-2xl transform hover:scale-103 transition-transform duration-300"
                   />
-                  <span className="absolute top-1.5 left-1.5 text-[8px] font-black px-1.5 py-0.5 rounded bg-black/60 text-white backdrop-blur-xs">
+                  <span className="absolute top-2.5 left-2.5 text-[9px] font-black px-2.5 py-1 rounded bg-black/65 text-white backdrop-blur-xs flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-amber-300 fill-amber-300" />
                     {cur.badge}
                   </span>
                 </div>
- 
-                <div className="flex items-center gap-1 mb-1.5 shrink-0 min-w-0">
+
+                <div className="flex items-center gap-2 mb-2.5 shrink-0 min-w-0">
                   <img
                     referrerPolicy="no-referrer"
                     src={cur.authorImage}
                     alt={cur.authorName}
-                    className="w-4.5 h-4.5 rounded-full object-cover border border-neutral-200 shrink-0"
+                    className="w-6 h-6 rounded-full object-cover border border-[#E9E4FF] shrink-0"
                   />
-                  <span className="text-[9px] text-[#5C36EC] font-bold truncate max-w-[65px] whitespace-nowrap shrink-0">@{cur.authorName}</span>
-                  <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ml-auto ${cur.tagColor} scale-90 origin-right shrink-0`}>
+                  <span className="text-xs text-[#5C36EC] font-black truncate max-w-[80px] whitespace-nowrap shrink-0 font-semibold">@{cur.authorName}</span>
+                  <span className={`text-[10px] font-black px-2 py-0.5 rounded ml-auto ${cur.tagColor} shrink-0`}>
                     {cur.tag}
                   </span>
                 </div>
- 
-                <h4 className="text-[11px] font-black text-gray-900 mb-0.5 leading-tight line-clamp-1">
+
+                <h4 className="text-sm sm:text-base font-black text-gray-900 mb-1 leading-snug line-clamp-1 text-left">
                   {cur.title}
                 </h4>
-                <p className="text-[9px] text-gray-400 mb-1.5 line-clamp-2 leading-snug h-[26px]">
+                <p className="text-xs text-gray-400 mb-3.5 line-clamp-2 leading-relaxed text-left h-[36px]">
                   {cur.description}
                 </p>
- 
-                {/* Hashtags display */}
-                <div className="flex flex-wrap gap-0.5 mb-2 select-none overflow-hidden h-[16px]">
-                  {getRouteHashtags({ title: cur.title, description: cur.description }).slice(0, 2).map((tag) => (
+
+                {/* Hashtags */}
+                <div className="flex flex-wrap gap-1 mb-3.5 select-none overflow-hidden h-[18px]">
+                  {getRouteHashtags({ title: cur.title, description: cur.description }).slice(0, 3).map((tag) => (
                     <span
                       key={tag}
                       onClick={(e) => {
                         e.stopPropagation();
                         setLocation(`/routes?search=${encodeURIComponent(tag)}`);
-                        toast.info(`📍 '${tag}' 기분 검색을 수행합니다.`);
+                        toast.info(`📍 '${tag}' 무드 검색을 수행합니다.`);
                       }}
-                      className="text-[8px] font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] px-1 rounded transition-colors cursor-pointer shrink-0"
+                      className="text-[9px] font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] px-1.5 py-0.5 rounded transition-colors cursor-pointer shrink-0"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
- 
-                {/* Statistics Footer */}
-                <div className="border-t border-neutral-100 pt-2 mt-auto flex items-center justify-between text-[8px] font-bold text-gray-400 shrink-0 select-none">
-                  <span className="flex items-center gap-0.5 text-gray-700 font-extrabold">
-                    <Footprints className="w-3 h-3 text-[#5C36EC]" /> 
+
+                {/* Footer specs */}
+                <div className="border-t border-neutral-100 pt-3.5 mt-auto flex items-center justify-between text-[11px] font-bold text-gray-400 shrink-0 select-none">
+                  <span className="flex items-center gap-1 text-gray-800 font-extrabold">
+                    <Footprints className="w-3.5 h-3.5 text-[#5C36EC]" /> 
                     {cur.time.replace("도보 ", "")}
                   </span>
-                  <span>|</span>
-                  <span>{cur.stops.replace(" 경유지", " 루트")}</span>
-                  <span>|</span>
-                  <span className="flex items-center gap-0.5 text-rose-500">
-                    <Heart className="w-2.5 h-2.5 text-rose-500 fill-rose-500" /> 
+                  <span>•</span>
+                  <span>{cur.stops}</span>
+                  <span>•</span>
+                  <span className="flex items-center gap-1 text-rose-500 font-extrabold">
+                    <Heart className="w-3 h-3 text-rose-500 fill-rose-500" /> 
                     {cur.hearts}
                   </span>
                 </div>
               </div>
             ))}
- 
-            {/* Elegant compact See More Card */}
+
+            {/* Compact Call-to-action Card */}
             <div 
               onClick={() => {
                 setLocation("/routes");
-                toast.success("전체 루트 탐색 페이지로 이동합니다! 🚀");
+                toast.success("전체 다이내믹 루트 페이지로 이동합니다! 🚀");
               }}
-              className="snap-start shrink-0 w-[110px] bg-[#FAF8FF] border border-dashed border-[#5C36EC]/30 rounded-2xl hover:bg-[#F2EDFF]/60 cursor-pointer flex flex-col items-center justify-center p-3 transition-all select-none"
+              className="snap-start shrink-0 w-[140px] bg-[#FAF8FF] border border-dashed border-[#5C36EC]/30 rounded-[28px] hover:bg-[#F2EDFF]/70 cursor-pointer flex flex-col items-center justify-center p-4 transition-all select-none"
             >
-              <div className="w-8 h-8 rounded-full bg-[#5C36EC] text-white flex items-center justify-center mb-1.5 shadow-2xs">
-                <ChevronRight className="w-4 h-4" />
+              <div className="w-10 h-10 rounded-full bg-[#5C36EC] text-white flex items-center justify-center mb-2 shadow-sm shrink-0">
+                <ChevronRight className="w-5 h-5" />
               </div>
-              <span className="text-[10px] font-black text-gray-900">더보기</span>
-              <span className="text-[8px] text-[#5C36EC] font-bold mt-0.5">전체 루트 보기</span>
+              <span className="text-xs font-black text-gray-900 font-sans">전체 더보기</span>
+              <span className="text-[10px] text-[#5C36EC] font-bold mt-1 font-sans">112개 코스 발견</span>
             </div>
           </div>
         </div>
 
-        {/* Create route button styled like a brilliant promo banner */}
-        <Link href="/create-route" className="w-full mb-6">
-          <div className="w-full bg-[#FAF8FF] border-2 border-dashed border-[#5C36EC]/40 rounded-3xl p-4 flex items-center justify-between hover:bg-[#F2EDFF]/60 cursor-pointer group transition-all duration-200">
-            <div className="flex flex-col pr-4">
-              <span className="text-[#5C36EC] text-[10px] font-black tracking-widest uppercase mb-0.5 flex items-center gap-1">
-                ✨ 나만의 여행 메이트 루트
+        {/* Section: Create Route CTA Banner */}
+        <Link href="/create-route" className="w-full mb-8 block">
+          <div className="w-full bg-[#F6F4FF] border-2 border-dashed border-[#5C36EC]/40 rounded-[28px] p-5 flex items-center justify-between hover:bg-[#EFEBFF] cursor-pointer group transition-all duration-300">
+            <div className="flex flex-col pr-4 text-left">
+              <span className="text-[#5C36EC] text-[10px] font-black tracking-widest uppercase mb-1 flex items-center gap-1.5 font-sans">
+                ✨ 크리에이터 메이트 도전
               </span>
-              <p className="text-slate-800 text-[12px] font-black leading-snug">
-                나만의 독창적인 여행 패키지 코스를 생성해 다른 러버들과 영감을 나눌 수도 있습니다.
+              <p className="text-gray-950 text-sm font-black leading-snug">
+                직접 밟은 아기자기한 팝업・주변 골목길을 엮어<br />
+                <span className="text-[#5C36EC] font-extrabold">나만의 시그니처 코스</span>를 발행해 볼까요?
               </p>
             </div>
-            <div className="bg-[#5C36EC] text-white p-2 ml-2 rounded-2xl group-hover:scale-105 duration-200 transition-transform shrink-0">
-              <ChevronRight className="w-4 h-4" />
+            <div className="bg-[#5C36EC] text-white p-3 rounded-2xl group-hover:scale-105 duration-300 transition-transform shrink-0 shadow-sm">
+              <ChevronRight className="w-5 h-5" />
             </div>
           </div>
         </Link>
 
-        {/* Recommended Routes Section - Handcrafted with absolute high fidelity */}
-        <div className="w-full mb-6">
-          <div className="flex items-end justify-between mb-3.5 select-none">
-            <div className="flex flex-col">
-              <h3 className="text-base font-black text-gray-900 leading-tight">추천 루트</h3>
-              <p className="text-[10px] text-gray-400 font-bold">메이트들이 즐겨 찾는 실시간 코스</p>
+        {/* Section: Recommended Routes (추천 루트) - Overhauled as Beautiful Horizontal Swipe Carousel */}
+        <div className="w-full mb-8">
+          <div className="flex items-end justify-between mb-4 select-none">
+            <div className="flex flex-col text-left">
+              <h3 className="text-lg sm:text-xl font-black text-gray-900 leading-tight">오늘의 인기 핫픽 🗺️</h3>
+              <p className="text-xs text-gray-400 font-bold">인생샷 성지부터 산책로까지 어우러지는 기분전환 코스</p>
             </div>
-            <Link href="/routes" className="text-xs font-black text-[#5C36EC] hover:underline flex items-center shrink-0">
-              더보기 <ChevronRight className="w-3.5 h-3.5" />
+            <Link href="/routes" className="text-xs font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] px-3.5 py-1.5 rounded-xl transition-colors shrink-0 flex items-center gap-0.5">
+              <span>전체보기</span>
+              <ChevronRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          {/* Premium Vertical Cards representing exact picture templates */}
-          <div className="flex flex-col gap-3.5 mb-6">
+          <div className="flex gap-4.5 overflow-x-auto pb-4 px-0.5 scrollbar-none snap-x snap-mandatory">
             {recommendedCuratedRoutes.map((rec) => (
               <div 
                 key={rec.id}
                 onClick={() => {
-                  toast.success(`'${rec.title}' 루트 정보 페이지로 이동합니다.`);
+                  toast.success(`'${rec.title}' 루트 가이드로 이동합니다.`);
                   setLocation(`/routes?search=${encodeURIComponent(rec.title)}`);
                 }}
-                className="w-full bg-white border border-[#EBE8F3] hover:border-[#5C36EC] hover:shadow-md transition-all rounded-[24px] p-3 flex gap-3 cursor-pointer"
+                className="snap-start shrink-0 w-[270px] sm:w-[300px] bg-white border border-[#ECEAF5] rounded-[28px] overflow-hidden shadow-2xs hover:shadow-sm hover:border-[#5C36EC] transition-all cursor-pointer flex flex-col p-4"
               >
-                {/* Left Thumbnail with region banner */}
-                <div className="relative w-24 h-24 sm:w-[104px] sm:h-[104px] rounded-2xl overflow-hidden bg-neutral-100 shrink-0">
+                <div className="relative h-36 rounded-xl overflow-hidden mb-3 bg-neutral-150 shrink-0">
                   <img
                     referrerPolicy="no-referrer"
                     src={rec.image}
                     alt={rec.title}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover rounded-xl"
                   />
-                  <span className="absolute top-1.5 left-1.5 text-[8.5px] font-black px-1.5 py-0.5 rounded bg-black/60 text-white backdrop-blur-xs">
+                  <span className="absolute top-2.5 left-2.5 text-[9px] font-black px-2.5 py-1 rounded bg-black/60 text-white backdrop-blur-xs">
                     {rec.region}
                   </span>
                 </div>
 
-                {/* Right text layout details */}
-                <div className="flex-1 flex flex-col justify-between min-w-0 py-0.5">
-                  <div>
-                    {/* Author, date and tag line */}
-                    <div className="flex items-center gap-1.5 text-[10px] text-gray-400 font-bold mb-1 shrink-0 select-none min-w-0">
-                      <img
-                        referrerPolicy="no-referrer"
-                        src={rec.authorImage}
-                        alt={rec.authorName}
-                        className="w-4 h-4 rounded-full object-cover shrink-0"
-                      />
-                      <span className="text-[#5C36EC] whitespace-nowrap shrink-0">@{rec.authorName}</span>
-                      <span>•</span>
-                      <span>{rec.dateLabel}</span>
-                      <span className={`text-[8px] font-black px-1.5 py-0.5 rounded ml-auto ${rec.tagColor} shrink-0`}>
-                        {rec.tag}
-                      </span>
-                    </div>
+                <div className="flex items-center gap-2 mb-2 shrink-0 min-w-0">
+                  <img
+                    referrerPolicy="no-referrer"
+                    src={rec.authorImage}
+                    alt={rec.authorName}
+                    className="w-5.5 h-5.5 rounded-full object-cover border border-[#E9E4FF] shrink-0"
+                  />
+                  <span className="text-xs text-[#5C36EC] font-black truncate max-w-[70px] whitespace-nowrap shrink-0 font-semibold">@{rec.authorName}</span>
+                  <span className={`text-[9px] font-black px-1.5 py-0.5 rounded ml-auto text-indigo-700 bg-indigo-50 shrink-0`}>
+                    {rec.tag}
+                  </span>
+                </div>
 
-                    {/* Title */}
-                    <h4 className="text-xs font-black text-gray-900 truncate leading-snug">
-                      {rec.title}
-                    </h4>
+                <h4 className="text-sm font-black text-gray-950 mb-1 leading-snug line-clamp-1 text-left">
+                  {rec.title}
+                </h4>
+                <p className="text-xs text-gray-400 mb-3.5 line-clamp-1 leading-relaxed text-left">
+                  {rec.description}
+                </p>
 
-                    {/* Short text body description snippet */}
-                    <p className="text-[10px] text-gray-400 mt-0.5 line-clamp-1 leading-normal">
-                      {rec.description}
-                    </p>
-                  </div>
-
-                  {/* Hashtags display */}
-                  <div className="flex flex-wrap gap-1 my-1.5 select-none">
-                    {getRouteHashtags({ title: rec.title, description: rec.description }).slice(0, 3).map((tag) => (
-                      <span
-                        key={tag}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setLocation(`/routes?search=${encodeURIComponent(tag)}`);
-                          toast.info(`📍 '${tag}' 카테고리 기분 검색을 수행합니다.`);
-                        }}
-                        className="text-[8px] font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] px-1.5 py-0.5 rounded transition-colors cursor-pointer"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  {/* Micro list mapping of the route course places */}
-                  <div className="bg-neutral-50 border border-neutral-100 rounded-xl px-2 py-0.5 my-1 select-none">
-                    <div className="flex items-center gap-1 text-[8.5px] font-black text-neutral-500 overflow-hidden truncate">
-                      <MapPin className="w-2.5 h-2.5 text-[#5C36EC]/60 shrink-0" />
-                      <span>명소 코스 가이드</span>
-                    </div>
-                  </div>
-
-                  {/* Footer micro stats */}
-                  <div className="flex items-center justify-between text-[9px] font-bold text-gray-400 mt-1 pt-1.5 border-t border-neutral-50 shrink-0 select-none">
-                    <span className="flex items-center gap-0.5 text-gray-700">
-                      <Footprints className="w-3.5 h-3.5 text-[#5C36EC]" />
-                      <span>{rec.time}</span>
+                {/* Hashtags */}
+                <div className="flex flex-wrap gap-1 mb-3.5 select-none overflow-hidden h-[18px]">
+                  {getRouteHashtags({ title: rec.title, description: rec.description }).slice(0, 3).map((tag) => (
+                    <span
+                      key={tag}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setLocation(`/routes?search=${encodeURIComponent(tag)}`);
+                        toast.info(`📍 '${tag}' 검색을 적용합니다.`);
+                      }}
+                      className="text-[9px] font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] px-1.5 py-0.5 rounded transition-colors cursor-pointer shrink-0"
+                    >
+                      {tag}
                     </span>
-                    <span>•</span>
-                    <span>{rec.stops}</span>
-                    <span>•</span>
-                    <div className="flex items-center gap-2 text-gray-400">
-                      <span className="flex items-center gap-0.5 text-rose-500/90">
-                        <Heart className="w-3 h-3 text-rose-500 fill-rose-500" />
-                        <span>{rec.hearts}</span>
-                      </span>
-                      <span className="flex items-center gap-0.5 text-sky-500">
-                        <Bookmark className="w-3 h-3 text-sky-500 fill-sky-500" />
-                        <span>{rec.bookmarks}</span>
-                      </span>
-                    </div>
+                  ))}
+                </div>
+
+                {/* Core specs footer */}
+                <div className="border-t border-neutral-100 pt-3.5 mt-auto flex items-center justify-between text-[11px] font-bold text-gray-400 shrink-0 select-none">
+                  <span className="flex items-center gap-1 text-gray-800 font-extrabold">
+                    <Footprints className="w-3.5 h-3.5 text-[#5C36EC]" /> 
+                    {rec.time.replace("도보 ", "")}
+                  </span>
+                  <span>•</span>
+                  <span>{rec.stops}</span>
+                  <span>•</span>
+                  <div className="flex items-center gap-2 text-neutral-400 font-semibold select-none">
+                    <span className="flex items-center gap-1 text-rose-500 font-extrabold">
+                      <Heart className="w-3 h-3 text-rose-500 fill-rose-500" /> 
+                      {rec.hearts}
+                    </span>
+                    <span className="flex items-center gap-1 text-sky-500 font-extrabold">
+                      <Bookmark className="w-3 h-3 text-sky-500 fill-sky-500" /> 
+                      {rec.bookmarks}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -627,24 +676,82 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Real User Routes Showcase - If present in database */}
+        {/* Section: Regional Hotspots Carousel list */}
+        <div className="w-full mb-8">
+          <div className="flex items-end justify-between mb-4 select-none">
+            <div className="flex flex-col text-left">
+              <h3 className="text-lg sm:text-xl font-black text-gray-900 leading-tight">지역별 감성 아지트 🗺️</h3>
+              <p className="text-xs text-gray-400 font-bold">서울, 경기, 인천 도심 주말 나들이 명코스 가이드</p>
+            </div>
+            <Link href="/routes" className="text-xs font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] px-3.5 py-1.5 rounded-xl transition-colors shrink-0 flex items-center gap-0.5 animate-pulse">
+              <span>목록보기</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="flex gap-4 scrollbar-none overflow-x-auto pb-4 snap-x snap-mandatory">
+            {regionalSpots.map((spot, idx) => (
+              <div
+                key={idx}
+                onClick={() => {
+                  setLocation(`/routes?region=${spot.name}`);
+                  toast.success(`📍 '${spot.name}' 지역 기반 코스들을 탐색합니다.`);
+                }}
+                className="snap-start shrink-0 w-[245px] h-[180px] rounded-[24px] overflow-hidden relative shadow-2xs hover:shadow-sm hover:scale-[1.01] transition-all cursor-pointer group"
+              >
+                {/* Background image & gradient overlay */}
+                <div className="absolute inset-0 bg-neutral-250">
+                  <img
+                    referrerPolicy="no-referrer"
+                    src={spot.image}
+                    alt={spot.name}
+                    className="w-full h-full object-cover transform group-hover:scale-105 duration-500 transition-transform"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent pointer-events-none" />
+                </div>
+
+                {/* Float Elements inside Card */}
+                <div className="absolute inset-0 p-4.5 flex flex-col justify-between items-start text-white select-none z-10 text-left">
+                  <span className="bg-[#5C36EC] text-[9px] font-black px-2 py-1 rounded-[8px] uppercase tracking-wider shadow-xs font-sans">
+                    {spot.badge}
+                  </span>
+
+                  <div className="w-full mt-auto">
+                    <h4 className="text-lg font-black text-white flex items-center gap-1 mb-0.5 leading-none">
+                      {spot.name}
+                      <ChevronRight className="w-4 h-4 text-white/80 group-hover:translate-x-0.5 transition-transform" />
+                    </h4>
+                    <p className="text-[11px] text-gray-200 font-bold mb-1 truncate">
+                      {spot.subtext}
+                    </p>
+                    <p className="text-[9px] text-gray-300 font-medium line-clamp-1 leading-snug">
+                      {spot.description}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Section: Real User Community Routes Showcase */}
         {routes.length > 0 && (
           <div className="w-full mb-4">
-            <div className="flex items-center justify-between mb-3 select-none">
-              <div className="flex flex-col">
-                <h3 className="text-sm font-black text-[#1F2937]">실시간 커뮤니티 등록 목록</h3>
-                <p className="text-[9px] text-[#9CA3AF] font-bold">인기 메이트 회원들이 발자취를 남긴 루트</p>
+            <div className="flex items-center justify-between mb-4 select-none">
+              <div className="flex flex-col text-left">
+                <h3 className="text-lg sm:text-xl font-black text-gray-950">공유된 실시간 발자취 ⚡</h3>
+                <p className="text-xs text-gray-400 font-bold">인기 메이트 회원들이 방금 정교하게 만들어 올린 루트</p>
               </div>
-              <Link href="/routes" className="text-xs font-black text-gray-400 hover:text-[#5C36EC]">
-                전체보기 &gt;
+              <Link href="/routes" className="text-xs font-black text-gray-400 hover:text-[#5C36EC] flex items-center">
+                <span>전체보기 &gt;</span>
               </Link>
             </div>
 
             <div 
               ref={recommendedScrollRef}
-              className="flex gap-3.5 overflow-x-auto pb-2 scrollbar-none snap-x snap-mandatory"
+              className="flex gap-4 overflow-x-auto pb-4 scrollbar-none snap-x snap-mandatory px-0.5"
             >
-              {routes.slice(0, 5).map((route: any) => {
+              {routes.slice(0, 6).map((route: any) => {
                 const firstPlace = route.places?.[0];
                 const meta = firstPlace ? getPlaceMeta(firstPlace.name) : { 
                   image: "https://images.unsplash.com/photo-1506126613408-eca07ce68773", 
@@ -653,34 +760,33 @@ export default function Home() {
                 };
 
                 return (
-                  <Link key={route.id} href={`/route/${route.id}`} className="snap-start shrink-0 w-[140px] block group">
-                    <div className="relative w-[140px] h-[95px] rounded-2xl overflow-hidden bg-gray-200 mb-1.5 shadow-2xs">
+                  <Link key={route.id} href={`/route/${route.id}`} className="snap-start shrink-0 w-[165px] block group text-left">
+                    <div className="relative w-[165px] h-[115px] rounded-2xl overflow-hidden bg-gray-200 mb-2 shadow-2xs">
                       <img
                         referrerPolicy="no-referrer"
                         src={meta.image}
                         alt={route.title}
                         className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
                       />
-                      <span className="absolute bottom-1.5 right-1.5 text-[8.5px] font-black px-1.5 py-0.5 rounded bg-black/60 text-white backdrop-blur-xs">
+                      <span className="absolute bottom-2 right-2 text-[9px] font-black px-2 py-0.5 rounded bg-black/60 text-white backdrop-blur-xs">
                         {route.places?.length || 0}곳 경유
                       </span>
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-[9px] text-[#5C36EC] font-black truncate whitespace-nowrap shrink-0">@{route.authorName || "User"}</span>
-                      <h4 className="text-xs font-black text-gray-800 truncate group-hover:text-[#5C36EC] leading-snug">
+                      <span className="text-[10px] text-[#5C36EC] font-black truncate whitespace-nowrap shrink-0 font-semibold">@{route.authorName || "User"}</span>
+                      <h4 className="text-xs sm:text-sm font-black text-gray-850 truncate group-hover:text-[#5C36EC] leading-tight mt-0.5">
                         {route.title}
                       </h4>
-                      {/* Dynamic Hashtag mapping */}
-                      <div className="flex flex-wrap gap-0.5 mt-0.5 select-none overflow-hidden h-[18px]">
+                      {/* Hashtags display */}
+                      <div className="flex flex-wrap gap-0.5 mt-1 select-none overflow-hidden h-[18px]">
                         {getRouteHashtags(route).slice(0, 2).map((tag) => (
                           <span
                             key={tag}
                             onClick={(e) => {
-                              // We use Link here so click might trigger parent navigate. Let's redirect explicitly & preventDefault
                               e.preventDefault();
                               e.stopPropagation();
                               setLocation(`/routes?search=${encodeURIComponent(tag)}`);
-                              toast.info(`📍 '${tag}' 카테고리 기분 검색을 수행합니다.`);
+                              toast.info(`📍 '${tag}' 카테고리 검색을 수행합니다.`);
                             }}
                             className="text-[8px] font-black text-[#5C36EC] bg-[#F0EDFF] hover:bg-[#E5E1FF] px-1 rounded transition-colors cursor-pointer shrink-0"
                           >
